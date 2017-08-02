@@ -7,15 +7,11 @@ function JavaScriptParser(global) {
   var j = {};
   JavaScriptParser.prototype = j;
   
-  j.variableStatement = f.nonTerminalSequence("reservedWordVar", "identifier", 
-  "initializer", "semicolon", 
-  function(reservedWordVar, identifier, initializer) {
+  j.variableStatement = f.nonTerminalSequence(/var /, "identifier", 
+  "initializer", /;/, 
+  function(identifier, initializer) {
     this.global[identifier] = initializer;
   });
-  
-  j.reservedWordVar = f.terminal(/(var )/, function() {});
-  
-  j.semicolon = f.terminal(/(;)/, function() {});
   
   j.identifier = f.terminal(/([a-z])/, function(match) {
     return match;
@@ -25,10 +21,8 @@ function JavaScriptParser(global) {
     return Number(match);
   });
   
-  j.equalSign = f.terminal(/=/, function() {});
-  
-  j.initializer = f.nonTerminalSequence("equalSign", "numericLiteral", 
-  function(equalSign, numericLiteral) {
+  j.initializer = f.nonTerminalSequence(/=/, "numericLiteral", 
+  function(numericLiteral) {
     return numericLiteral;
   });
   
