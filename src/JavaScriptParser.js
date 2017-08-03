@@ -8,7 +8,7 @@ function JavaScriptParser(global) {
   JavaScriptParser.prototype = j;
   
   j.variableStatement = f.nonTerminalSequence(/var /, "identifier", 
-  "initializer", /;/, 
+  "initializerOpt", /;/, 
   function(identifier, initializer) {
     this.global[identifier] = initializer;
   });
@@ -25,5 +25,7 @@ function JavaScriptParser(global) {
   function(numericLiteral) {
     return numericLiteral;
   });
+  
+  j.initializerOpt = f.nonTerminalQuestionMark("initializer", undefined);
   
 })();
