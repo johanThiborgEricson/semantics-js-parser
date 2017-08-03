@@ -1,5 +1,5 @@
-function JavaScriptParser(global) {
-  this.global = global;
+function JavaScriptParser() {
+  this.global = {};
 }
 
 (function() {

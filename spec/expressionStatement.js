@@ -1,9 +1,8 @@
 describe("An expression statement", function() {
   it("can set the value of a declared variable", function() {
-    var global = {};
-    var js = new JavaScriptParser(global);
+    var js = new JavaScriptParser();
     
     js.program("var a;a=1");
-    expect(global.a).toBe(1);
+    expect(js.global.a).toBe(1);
   });
 });

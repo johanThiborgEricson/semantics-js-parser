@@ -1,2 +1,1 @@
 Rewrite README.md
-Remove abillity to pass a global object, just create it in the constructor.
