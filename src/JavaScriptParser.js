@@ -7,8 +7,20 @@ function JavaScriptParser(global) {
   var j = {};
   JavaScriptParser.prototype = j;
   
+  j.program = f.nonTerminalAsterisk("statement", function(statements) {
+    
+  });
+  
+  j.statement = f.nonTerminalAlternative(
+    "variableStatement", "expressionStatement");
+  
   j.variableStatement = f.nonTerminalSequence(/var /, "identifier", 
   "initializerOpt", /;/, 
+  function(identifier, initializer) {
+    this.global[identifier] = initializer;
+  });
+  
+  j.expressionStatement = f.nonTerminalSequence("identifier", "initializer", 
   function(identifier, initializer) {
     this.global[identifier] = initializer;
   });
