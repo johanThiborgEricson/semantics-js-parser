@@ -14,4 +14,10 @@ describe("A function expression", function() {
     expect(js.global.a).toBe(1);
   });
   
+  it("creates a execution context", function() {
+    js.program("var a=0;var f=function(){var a=1;};f();");
+    
+    expect(js.global.a).toBe(0);
+  });
+  
 });

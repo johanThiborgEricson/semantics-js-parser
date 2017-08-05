@@ -52,21 +52,35 @@ function JavaScriptParser() {
   
   j.callExpression = f.nonTerminalSequence("identifier", /\(/, /\)/, 
   function(identifier) {
-    this.executionContext[identifier](this);
+    this.executionContext[identifier]();
   });
   
   j.assignmentExpression1 = f.nonTerminalSequence("identifier", /=/, 
   "assignmentExpression", function(identifier, assignmentExpression) {
-    this.executionContext[identifier] = assignmentExpression;
+    var context = this.executionContext;
+    if(!context.hasOwnProperty(identifier)) {
+      context = this.outerContext.get(context);
+    }
+    context[identifier] = assignmentExpression;
     return assignmentExpression;
   });
   
   j.functionExpression = f.nonTerminalSequence(/function/, 
   /\(/, /\)/, /\{/, "functionBody", /\}/, function(functionBody) {
-    return functionBody;
+    var that = this;
+    var outerExecutionContext = that.executionContext;
+    var f = function() {
+      var oldExecutionContext = that.executionContext;
+      var executionContext = {};
+      that.outerContext.set(executionContext, outerExecutionContext);
+      that.executionContext = executionContext;
+      functionBody(that);
+      that.executionContext = oldExecutionContext;
+    };
+    return f;
   });
   
-  j.functionBody = f.deferredExecution("program");
+  j.functionBody = f.deferredExecution("statements");
   
   j.initialiserOpt = f.nonTerminalQuestionMark("initialiser", undefined);
   
