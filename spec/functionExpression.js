@@ -20,4 +20,10 @@ describe("A function expression", function() {
     expect(js.global.a).toBe(0);
   });
   
+  it("can return a value", function() {
+    js.program("var f=function(){return 1;};var a=f();");
+    
+    expect(js.global.a).toBe(1);
+  });
+  
 });

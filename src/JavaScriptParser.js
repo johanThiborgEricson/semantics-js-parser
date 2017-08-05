@@ -23,7 +23,12 @@ function JavaScriptParser() {
   });
   
   j.statement = f.nonTerminalAlternative(
-    "variableStatement", "expressionStatement");
+    "variableStatement", "expressionStatement", "returnStatement");
+    
+  j.returnStatement = f.nonTerminalSequence(/return /, "assignmentExpression", 
+  /;/, function(assignmentExpression) {
+    this.returnValue = assignmentExpression;
+  });
     
   j.expressionStatement = f.nonTerminalSequence("assignmentExpression", /;/, 
   function() {});
@@ -53,6 +58,7 @@ function JavaScriptParser() {
   j.callExpression = f.nonTerminalSequence("identifier", /\(/, /\)/, 
   function(identifier) {
     this.executionContext[identifier]();
+    return this.returnValue;
   });
   
   j.assignmentExpression1 = f.nonTerminalSequence("identifier", /=/, 
