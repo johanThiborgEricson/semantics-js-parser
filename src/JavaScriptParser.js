@@ -37,7 +37,12 @@ function JavaScriptParser() {
   });
   
   j.assignmentExpression = f.nonTerminalAlternative("numericLiteral", 
-  "functionExpression", "assignmentExpression1");
+  "functionExpression", "callExpression", "assignmentExpression1");
+  
+  j.callExpression = f.nonTerminalSequence("identifier", /\(/, /\)/, 
+  function(identifier) {
+    this.global[identifier](this);
+  });
   
   j.assignmentExpression1 = f.nonTerminalSequence("identifier", /=/, 
   "assignmentExpression", function(identifier, assignmentExpression) {
