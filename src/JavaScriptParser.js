@@ -7,7 +7,18 @@ function JavaScriptParser() {
   var j = {};
   JavaScriptParser.prototype = j;
   
-  j.program = f.nonTerminalAsterisk("statement", function(statements) {
+  j.statements = f.nonTerminalAsterisk("statement", function(statements) {
+    
+  });
+  
+  j.programInit = f.terminalEmptyString(function() {
+    this.executionContext = this.global;
+    this.outerContext = new Map();
+    this.outerContext.set(this.executionContext, null);
+  });
+  
+  j.program = f.nonTerminalSequence("programInit", "statements", 
+  function(programInit, statements) {
     
   });
   
@@ -20,7 +31,7 @@ function JavaScriptParser() {
   j.variableStatement = f.nonTerminalSequence(/var /, "identifier", 
   "initialiserOpt", /;/, 
   function(identifier, initialiser) {
-    this.global[identifier] = initialiser;
+    this.executionContext[identifier] = initialiser;
   });
   
   j.identifier = f.terminal(/([a-z])/, function(match) {
@@ -41,12 +52,12 @@ function JavaScriptParser() {
   
   j.callExpression = f.nonTerminalSequence("identifier", /\(/, /\)/, 
   function(identifier) {
-    this.global[identifier](this);
+    this.executionContext[identifier](this);
   });
   
   j.assignmentExpression1 = f.nonTerminalSequence("identifier", /=/, 
   "assignmentExpression", function(identifier, assignmentExpression) {
-    this.global[identifier] = assignmentExpression;
+    this.executionContext[identifier] = assignmentExpression;
     return assignmentExpression;
   });
   

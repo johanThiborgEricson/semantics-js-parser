@@ -2,7 +2,7 @@ describe("A variable statement", function() {
   it("can define one variable", function() {
     var js = new JavaScriptParser();
     
-    js.variableStatement("var a=1;");
+    js.program("var a=1;");
     
     expect(js.global.a).toBe(1);
   });
@@ -11,7 +11,7 @@ describe("A variable statement", function() {
     var js = new JavaScriptParser();
     
     expect(function() {
-      js.variableStatement("var a;");
+      js.program("var a;");
     }).not.toThrow();
     
   });
