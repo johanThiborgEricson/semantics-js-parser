@@ -18,9 +18,9 @@ function JavaScriptParser() {
   function() {});
   
   j.variableStatement = f.nonTerminalSequence(/var /, "identifier", 
-  "initializerOpt", /;/, 
-  function(identifier, initializer) {
-    this.global[identifier] = initializer;
+  "initialiserOpt", /;/, 
+  function(identifier, initialiser) {
+    this.global[identifier] = initialiser;
   });
   
   j.identifier = f.terminal(/([a-z])/, function(match) {
@@ -31,7 +31,7 @@ function JavaScriptParser() {
     return Number(match);
   });
   
-  j.initializer = f.nonTerminalSequence(/=/, "assignmentExpression", 
+  j.initialiser = f.nonTerminalSequence(/=/, "assignmentExpression", 
   function(assignmentExpression) {
     return assignmentExpression;
   });
@@ -57,6 +57,6 @@ function JavaScriptParser() {
   
   j.functionBody = f.deferredExecution("program");
   
-  j.initializerOpt = f.nonTerminalQuestionMark("initializer", undefined);
+  j.initialiserOpt = f.nonTerminalQuestionMark("initialiser", undefined);
   
 })();
