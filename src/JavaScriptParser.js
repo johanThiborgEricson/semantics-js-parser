@@ -33,10 +33,20 @@ function JavaScriptParser() {
     return Number(match);
   });
   
-  j.initializer = f.nonTerminalSequence(/=/, "numericLiteral", 
-  function(numericLiteral) {
-    return numericLiteral;
+  j.initializer = f.nonTerminalSequence(/=/, "assignmentExpression", 
+  function(assignmentExpression) {
+    return assignmentExpression;
   });
+  
+  j.assignmentExpression = f.nonTerminalAlternative("numericLiteral", 
+  "functionExpression");
+  
+  j.functionExpression = f.nonTerminalSequence(/function/, 
+  /\(/, /\)/, /\{/, "functionBody", /\}/, function(functionBody) {
+    return functionBody;
+  });
+  
+  j.functionBody = f.deferredExecution("program");
   
   j.initializerOpt = f.nonTerminalQuestionMark("initializer", undefined);
   
