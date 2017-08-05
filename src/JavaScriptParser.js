@@ -12,7 +12,10 @@ function JavaScriptParser() {
   });
   
   j.statement = f.nonTerminalAlternative(
-    "variableStatement", "assignmentExpression");
+    "variableStatement", "expressionStatement");
+    
+  j.expressionStatement = f.nonTerminalSequence("assignmentExpression", /;/, 
+  function() {});
   
   j.variableStatement = f.nonTerminalSequence(/var /, "identifier", 
   "initializerOpt", /;/, 
