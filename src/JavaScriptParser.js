@@ -22,7 +22,7 @@ function JavaScriptParser() {
     
   });
   
-  j.statement = f.nonTerminalAlternative(
+  j.statement = f.disjunction(
     "variableStatement", "expressionStatement", "returnStatement");
     
   j.returnStatement = f.nonTerminalSequence(/return /, "assignmentExpression", 
@@ -52,7 +52,7 @@ function JavaScriptParser() {
     return assignmentExpression;
   });
   
-  j.assignmentExpression = f.nonTerminalAlternative("numericLiteral", 
+  j.assignmentExpression = f.disjunction("numericLiteral", 
   "functionExpression", "callExpression", "assignmentExpression1");
   
   j.callExpression = f.nonTerminalSequence("identifier", /\(/, /\)/, 
