@@ -7,61 +7,61 @@ function JavaScriptParser() {
   var j = {};
   JavaScriptParser.prototype = j;
   
-  j.statements = f.nonTerminalAsterisk("statement", function(statements) {
+  j.statements = f.star("statement", function(statements) {
     
   });
   
-  j.programInit = f.terminalEmptyString(function() {
+  j.programInit = f.empty(function() {
     this.executionContext = this.global;
     this.outerContext = new Map();
     this.outerContext.set(this.executionContext, null);
   });
   
-  j.program = f.nonTerminalSequence("programInit", "statements", 
+  j.program = f.group("programInit", "statements", 
   function(programInit, statements) {
     
   });
   
-  j.statement = f.disjunction(
+  j.statement = f.or(
     "variableStatement", "expressionStatement", "returnStatement");
     
-  j.returnStatement = f.nonTerminalSequence(/return /, "assignmentExpression", 
+  j.returnStatement = f.group(/return /, "assignmentExpression", 
   /;/, function(assignmentExpression) {
     this.returnValue = assignmentExpression;
   });
     
-  j.expressionStatement = f.nonTerminalSequence("assignmentExpression", /;/, 
+  j.expressionStatement = f.group("assignmentExpression", /;/, 
   function() {});
   
-  j.variableStatement = f.nonTerminalSequence(/var /, "identifier", 
+  j.variableStatement = f.group(/var /, "identifier", 
   "initialiserOpt", /;/, 
   function(identifier, initialiser) {
     this.executionContext[identifier] = initialiser;
   });
   
-  j.identifier = f.terminal(/([a-z])/, function(match) {
+  j.identifier = f.atom(/([a-z])/, function(match) {
     return match;
   });
   
-  j.numericLiteral = f.terminal(/([0-9])/, function(match) {
+  j.numericLiteral = f.atom(/([0-9])/, function(match) {
     return Number(match);
   });
   
-  j.initialiser = f.nonTerminalSequence(/=/, "assignmentExpression", 
+  j.initialiser = f.group(/=/, "assignmentExpression", 
   function(assignmentExpression) {
     return assignmentExpression;
   });
   
-  j.assignmentExpression = f.disjunction("numericLiteral", 
+  j.assignmentExpression = f.or("numericLiteral", 
   "functionExpression", "callExpression", "assignmentExpression1");
   
-  j.callExpression = f.nonTerminalSequence("identifier", /\(/, /\)/, 
+  j.callExpression = f.group("identifier", /\(/, /\)/, 
   function(identifier) {
     this.executionContext[identifier]();
     return this.returnValue;
   });
   
-  j.assignmentExpression1 = f.nonTerminalSequence("identifier", /=/, 
+  j.assignmentExpression1 = f.group("identifier", /=/, 
   "assignmentExpression", function(identifier, assignmentExpression) {
     var context = this.executionContext;
     if(!context.hasOwnProperty(identifier)) {
@@ -71,7 +71,7 @@ function JavaScriptParser() {
     return assignmentExpression;
   });
   
-  j.functionExpression = f.nonTerminalSequence(/function/, 
+  j.functionExpression = f.group(/function/, 
   /\(/, /\)/, /\{/, "functionBody", /\}/, function(functionBody) {
     var that = this;
     var outerExecutionContext = that.executionContext;
@@ -88,6 +88,6 @@ function JavaScriptParser() {
   
   j.functionBody = f.deferredExecution("statements");
   
-  j.initialiserOpt = f.nonTerminalQuestionMark("initialiser", undefined);
+  j.initialiserOpt = f.opt("initialiser", undefined);
   
 })();
