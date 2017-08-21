@@ -39,11 +39,11 @@ function JavaScriptParser() {
     this.executionContext[identifier] = initialiser;
   });
   
-  j.identifier = f.atom(/([a-z])/, function(match) {
+  j.identifier = f.atom(/[a-z]/, function(match) {
     return match;
   });
   
-  j.numericLiteral = f.atom(/([0-9])/, function(match) {
+  j.numericLiteral = f.atom(/[0-9]/, function(match) {
     return Number(match);
   });
   
@@ -52,11 +52,24 @@ function JavaScriptParser() {
     return assignmentExpression;
   });
   
-  j.assignmentExpression = f.or("numericLiteral", 
-  "functionExpression", "callExpression", "assignmentExpression1");
+  j.assignmentExpression = f.or("numericLiteral", "functionExpression", 
+  "callExpression", "assignmentExpression1", "objectLiteral");
   
-  j.callExpression = f.group("identifier", /\(/, /\)/, 
-  function(identifier) {
+  j.objectLiteral = f.group(/\{/, "propertyNameAndValueList", /,?/, /\}/, 
+  function(propertyNameAndValueList) {
+    var o = {};
+    propertyNameAndValueList.map(function(property) {
+      o[property.identifier] = property.assignmentExpression;
+    });
+    
+    return o;
+  });
+  
+  j.propertyNameAndValueList = f.star("propertyAssignment", /,/);
+  
+  j.propertyAssignment = f.group("identifier", /:/, "assignmentExpression");
+  
+  j.callExpression = f.group("identifier", /\(/, /\)/, function(identifier) {
     this.executionContext[identifier]();
     return this.returnValue;
   });
